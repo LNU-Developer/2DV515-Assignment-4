@@ -8,7 +8,6 @@ namespace NaiveBayesAssignment.Models
         {
             var model = CreateModel(X, y);
             // PrintModel(model);
-
             _Model = model.ToArray();
         }
 
@@ -42,7 +41,10 @@ namespace NaiveBayesAssignment.Models
 
         public float AccuracyScore(int[] preds, int[] y)
         {
-            throw new NotImplementedException();
+            float count = 0;
+            for (int i = 0; i < preds.Length; i++)
+                if (preds[i] == y[i]) count++;
+            return count / preds.Length;
         }
 
         public int[][] ConfusionMatrix(int[] preds, int[] y)
