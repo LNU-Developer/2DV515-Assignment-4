@@ -2,29 +2,44 @@ namespace NaiveBayesAssignment.Models
 {
     public class NaiveBayesService : INaiveBayesService
     {
-        private List<Model> _Model;
+        private Model[] _Model;
 
         public void Fit(float[][] X, int[] y)
         {
             var model = CreateModel(X, y);
-            PrintModel(model);
-            _Model = model;
+            // PrintModel(model);
+
+            _Model = model.ToArray();
         }
 
         public int[] Predict(float[][] X)
         {
-            var preds = new int[X.Count()];
+            var preds = new List<int>();
             foreach (var row in X)
             {
-                foreach (var column in row)
+                var aPred = new List<double[]>();
+                for (int i = 0; i < _Model.Count(); i++)
                 {
-
+                    var temp = new double[5];
+                    foreach (var column in row)
+                    {
+                        var indexValue = _Model[i].Calculation[Array.IndexOf(row, column)];
+                        var power = Math.Pow((column - indexValue.Mean), 2) / (2 * Math.Pow(indexValue.StandardDeviation, 2));
+                        var dividend = Math.Pow(Math.E, -power);
+                        var divisor = indexValue.StandardDeviation * Math.Sqrt(2 * Math.PI);
+                        temp[Array.IndexOf(row, column)] = dividend / divisor;
+                        var log = Math.Log(temp[0]) + Math.Log(temp[1]) + Math.Log(temp[2]) + Math.Log(temp[3]);
+                        temp[4] = Math.Exp(log);
+                    }
+                    aPred.Add(temp);
                 }
-
+                var best = aPred.Aggregate((max, x) => x[4] > max[4] ? x : max);
+                preds.Add(aPred.IndexOf(best));
             }
-
-            return preds;
+            // PrintPreds(preds);
+            return preds.ToArray();
         }
+
         public float AccuracyScore(int[] preds, int[] y)
         {
             throw new NotImplementedException();
@@ -49,7 +64,7 @@ namespace NaiveBayesAssignment.Models
                 labels.Add(new Model
                 {
                     Key = label,
-                    Calculation = new List<Calculation>
+                    Calculation = new Calculation[4]
                     {
                         CreateCalculation(0, label, SumArrayColumn(0, label, X, y), count, X, y),
                         CreateCalculation(1, label, SumArrayColumn(1, label, X, y), count, X, y),
@@ -107,6 +122,13 @@ namespace NaiveBayesAssignment.Models
                     Console.WriteLine(value.Mean);
                     Console.WriteLine(value.StandardDeviation);
                 }
+            }
+        }
+        private void PrintPreds(List<int> preds)
+        {
+            foreach (var item in preds)
+            {
+                Console.WriteLine(item);
             }
         }
     }

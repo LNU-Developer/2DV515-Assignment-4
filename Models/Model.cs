@@ -3,8 +3,7 @@ namespace NaiveBayesAssignment.Models
     public class Model
     {
         public int Key { get; set; }
-        public List<float> Values { get; set; }
-        public List<Calculation> Calculation { get; set; } = new List<Calculation>();
+        public Calculation[] Calculation { get; set; }
         public int Count { get; set; }
     }
 
