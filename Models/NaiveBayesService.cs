@@ -49,7 +49,16 @@ namespace NaiveBayesAssignment.Models
 
         public int[][] ConfusionMatrix(int[] preds, int[] y)
         {
-            throw new NotImplementedException();
+            var count = y.Distinct().Count();
+            var confMatrix = new int[count][];
+
+            for (int i = 0; i < count; i++)
+                confMatrix[i] = new int[count];
+
+            for (int i = 0; i < preds.Length; i++)
+                confMatrix[y[i]][preds[i]] += 1;
+
+            return confMatrix;
         }
 
         public int[] CrossvalPredict(float[][] X, int[] y, int folds)
@@ -131,6 +140,18 @@ namespace NaiveBayesAssignment.Models
             foreach (var item in preds)
             {
                 Console.WriteLine(item);
+            }
+        }
+
+        public void PrintConfusionMatrix(int[][] matrix)
+        {
+            for (int i = 0; i < matrix.Count(); i++)
+            {
+                for (int j = 0; j < matrix[i].Count(); j++)
+                {
+                    Console.Write(string.Format("{0} ", matrix[i][j]));
+                }
+                Console.Write(Environment.NewLine);
             }
         }
     }
