@@ -1,18 +1,9 @@
-﻿using NaiveBayes.Models;
+﻿using NaiveBayesAssignment.Models;
 
-var loader = new Loader("./Data/iris.csv");
-loader.LoadData();
+var iris = new Loader("./Data/iris.csv");
+iris.LoadData();
+var irisBayes = new NaiveBayesService();
+irisBayes.Fit(iris.GetX(), iris.GetY());
 
-foreach (var item in loader.GetX())
-{
-    Console.WriteLine(item);
-    foreach (var item2 in item)
-    {
-        Console.WriteLine(item2);
-    }
-}
-
-foreach (var item in loader.GetY())
-{
-    Console.WriteLine(item);
-}
+var bankNotes = new Loader("./Data/iris.csv");
+bankNotes.LoadData();

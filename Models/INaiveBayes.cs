@@ -1,6 +1,6 @@
-namespace NaiveBayes.Models
+namespace NaiveBayesAssignment.Models
 {
-    interface INaiveBayes
+    interface INaiveBayesService
     {
         void Fit(float[][] X, int[] y);
         int[] Predict(float[][] X);

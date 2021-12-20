@@ -1,5 +1,5 @@
 using System.Globalization;
-namespace NaiveBayes.Models
+namespace NaiveBayesAssignment.Models
 {
     public class Loader
     {
@@ -42,7 +42,7 @@ namespace NaiveBayes.Models
                 if (value == searchedValue) return i;
                 i++;
             }
-            return 1000;
+            return -1;
         }
 
         public float[][] GetX()
@@ -53,6 +53,23 @@ namespace NaiveBayes.Models
         public int[] GetY()
         {
             return y;
+        }
+
+        public void CheckInput()
+        {
+            foreach (var item in X)
+            {
+                Console.WriteLine(item);
+                foreach (var item2 in item)
+                {
+                    Console.WriteLine(item2);
+                }
+            }
+
+            foreach (var item in y)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
 }
