@@ -16,24 +16,26 @@ namespace NaiveBayesAssignment.Models
             var preds = new List<int>();
             foreach (var row in X)
             {
-                var aPred = new List<double[]>();
+                var tmpPred = new List<double[]>();
                 for (int i = 0; i < _Model.Count(); i++)
                 {
-                    var temp = new double[5];
+                    var quotient = new double[5];
                     foreach (var column in row)
                     {
                         var indexValue = _Model[i].Calculation[Array.IndexOf(row, column)];
+
                         var power = Math.Pow((column - indexValue.Mean), 2) / (2 * Math.Pow(indexValue.StandardDeviation, 2));
                         var dividend = Math.Pow(Math.E, -power);
                         var divisor = indexValue.StandardDeviation * Math.Sqrt(2 * Math.PI);
-                        temp[Array.IndexOf(row, column)] = dividend / divisor;
-                        var log = Math.Log(temp[0]) + Math.Log(temp[1]) + Math.Log(temp[2]) + Math.Log(temp[3]);
-                        temp[4] = Math.Exp(log);
+
+                        quotient[Array.IndexOf(row, column)] = dividend / divisor;
+                        var log = Math.Log(quotient[0]) + Math.Log(quotient[1]) + Math.Log(quotient[2]) + Math.Log(quotient[3]);
+                        quotient[4] = Math.Exp(log);
                     }
-                    aPred.Add(temp);
+                    tmpPred.Add(quotient);
                 }
-                var best = aPred.Aggregate((max, x) => x[4] > max[4] ? x : max);
-                preds.Add(aPred.IndexOf(best));
+                var best = tmpPred.Aggregate((max, x) => x[4] > max[4] ? x : max);
+                preds.Add(tmpPred.IndexOf(best));
             }
             // PrintPreds(preds);
             return preds.ToArray();
@@ -63,7 +65,26 @@ namespace NaiveBayesAssignment.Models
 
         public int[] CrossvalPredict(float[][] X, int[] y, int folds)
         {
-            throw new NotImplementedException();
+            if (folds <= 0) return new int[0];
+            var preds = new List<int[]>();
+
+            var splitX = new List<float[][]>();
+            var splitY = new List<int[]>();
+            for (int i = 0; i < folds; i++)
+            {
+                splitX.Add(X.Skip(i * X.Count() / folds).Take(X.Count() / folds).ToArray());
+                splitY.Add(y.Skip(i * y.Count() / folds).Take(y.Count() / folds).ToArray());
+            }
+
+            for (int i = 0; i < splitX.Count; i++)
+            {
+                var testX = splitX.ElementAt(i).ToArray();
+                var trainingX = splitX.Where((source, index) => index != i).ToArray();
+                var trainingY = splitY.Where((source, index) => index != i).ToArray();
+                Fit(trainingX.SelectMany(i => i).ToArray(), trainingY.SelectMany(i => i).ToArray());
+                preds.Add(Predict(testX));
+            }
+            return preds.SelectMany(i => i).ToArray();
         }
 
         private List<Model> CreateModel(float[][] X, int[] y)
